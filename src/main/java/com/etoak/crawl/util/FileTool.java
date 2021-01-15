@@ -52,6 +52,7 @@ public class FileTool {
      */
 
     public static void saveToLocal(Page page) {
+        // 新建文件夹
         mkdir();
         String fileName =  getFileNameByUrl(page.getUrl(), page.getContentType()) ;
         String filePath = dirPath + fileName ;

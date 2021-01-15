@@ -42,12 +42,16 @@ public class PageParserTool {
         Iterator iterator = es.iterator();
         while (iterator.hasNext()) {
             Element element = (Element) iterator.next();
-            /*if ( element.hasAttr("href") ) {
-                links.add(element.attr("abs:href"));
-            }else if( element.hasAttr("src") ){
-                links.add(element.attr("abs:src"));
-            }else */
             // 获取想要的元素 名称 ，前面 加上 【abs:】，可以加入links链接队列
+
+            /*if (element.hasAttr("href")) {
+                links.add(element.attr("abs:href"));
+            }
+
+            if (element.hasAttr("src")) {
+                links.add(element.attr("abs:src"));
+            }*/
+
             if (element.hasAttr("data-src")) {
                 links.add(element.attr("abs:data-src"));
             }
