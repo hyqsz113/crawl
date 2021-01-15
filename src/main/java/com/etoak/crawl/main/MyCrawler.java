@@ -70,14 +70,14 @@ public class MyCrawler {
                 System.out.println(es);
             }
 
-            //将保存文件
+            // 将保存文件
             FileTool.saveToLocal(page);
 
             //将已经访问过的链接放入已访问的链接中；
             Links.addVisitedUrlSet(visitUrl);
 
-            //得到超链接
-            Set<String> links = PageParserTool.getLinks(page, "img");
+            //得到超链接（获取指定标签内的 超链接）
+            Set<String> links = PageParserTool.getLinks(page, "p");
             for (String link : links) {
                 Links.addUnvisitedUrlQueue(link);
                 System.out.println("新增爬取路径: " + link);
