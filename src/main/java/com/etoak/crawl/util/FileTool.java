@@ -1,7 +1,6 @@
 package com.etoak.crawl.util;
 
 
-
 import com.etoak.crawl.page.Page;
 
 import java.io.DataOutputStream;
@@ -34,12 +33,16 @@ public class FileTool {
         }
     }
 
-    /*
+    /**
     *  生成目录
-    * */
+    **/
     private static void mkdir() {
         if (dirPath == null) {
-            dirPath = Class.class.getClass().getResource("/").getPath() + "temp\\";
+             dirPath = Class.class.getClass().getResource("/").getPath() + "temp\\";
+            // 地址可以用以下格式
+            // todo 现在需要获取 【目录中，  <p><a>中间的元素</a></p>  】 来命名文件夹
+            // dirPath = "E:\\pachong\\" + "temp\\";
+
         }
         File fileDir = new File(dirPath);
         if (!fileDir.exists()) {

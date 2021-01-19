@@ -14,7 +14,7 @@ public class PageParserTool {
     }
 
     /*
-     *  通过css选择器来得到指定元素;
+     *  通过 css选择器 来得到指定元素;
      *
      *  */
     public static Element select(Page page, String cssSelector, int index) {
@@ -28,7 +28,7 @@ public class PageParserTool {
 
 
     /**
-     * 获取满足选择器的元素中的链接 选择器cssSelector必须定位到具体的超链接
+     * 获取满足选择器的元素中的链接 选择器 cssSelector 必须定位到具体的超链接
      * 例如我们想抽取id为content的div中的所有超链接，这里
      * 就要将cssSelector定义为div[id=content] a
      * 放入set 中 防止重复；
