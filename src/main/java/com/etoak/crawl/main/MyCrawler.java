@@ -8,6 +8,9 @@ import com.etoak.crawl.page.RequestAndResponseTool;
 import com.etoak.crawl.util.FileTool;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -32,10 +35,10 @@ public class MyCrawler {
     /**
      * 抓取过程
      *
-     * @param seeds
-     * @return
+     * @param seeds 抓取网址
+     * @param limit 限制数量
      */
-    public void crawling(String[] seeds) {
+    public void crawling(String[] seeds, Integer limit) {
 
         //初始化 URL 队列
         initCrawlerWithSeeds(seeds);
@@ -52,7 +55,7 @@ public class MyCrawler {
         };
 
         //循环条件：待抓取的链接不空且抓取的网页不多于 1000
-        while (!Links.unVisitedUrlQueueIsEmpty() && Links.getVisitedUrlNum() <= 10) {
+        while (!Links.unVisitedUrlQueueIsEmpty() && Links.getVisitedUrlNum() <= limit) {
 
             //先从待访问的序列中取出第一个；
             String visitUrl = (String) Links.removeHeadOfUnVisitedUrlQueue();
@@ -89,6 +92,25 @@ public class MyCrawler {
     //main 方法入口
     public static void main(String[] args) {
         MyCrawler crawler = new MyCrawler();
-        crawler.crawling(new String[]{"https://mp.weixin.qq.com/s/PAlQ5w2tc_3dV_A8tr2gVg"});
+
+        String baseUrl = "https://mp.weixin.qq.com/s?__biz=MzU0Mzk5MjUxMg==&mid=2247504426&idx=1&sn=22c103693e26a175c681973e8c732cf4";
+        String childUrl = "https://mp.weixin.qq.com/s/PAlQ5w2tc_3dV_A8tr2gVg";
+        List<String> list = new ArrayList<String>();
+        list.add(baseUrl);
+        crawler.crawling(getStringArray(list), 10);
+    }
+
+    /**
+     * 集合 转化为 数组
+     *
+     * @param list
+     * @return
+     */
+    private static String[] getStringArray(List<String> list) {
+        String[] strings = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            strings[i] = list.get(i);
+        }
+        return strings;
     }
 }
