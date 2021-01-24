@@ -9,7 +9,6 @@ import com.etoak.crawl.util.FileTool;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -35,10 +34,11 @@ public class MyCrawler {
     /**
      * 抓取过程
      *
-     * @param seeds 抓取网址
-     * @param limit 限制数量
+     * @param seeds   抓取网址
+     * @param limit   限制数量
+     * @param baseUrl 过滤url
      */
-    public void crawling(String[] seeds, Integer limit) {
+    public void crawling(String[] seeds, Integer limit, String baseUrl) {
 
         //初始化 URL 队列
         initCrawlerWithSeeds(seeds);
@@ -46,7 +46,7 @@ public class MyCrawler {
         //定义过滤器，提取以 http://www.baidu.com 开头的链接
         LinkFilter filter = new LinkFilter() {
             public boolean accept(String url) {
-                if (url.startsWith("https://mp.weixin.qq.com/s/PAlQ5w2tc_3dV_A8tr2gVg")) {
+                if (url.startsWith("https://mp.weixin.qq.com/")) {
                     return true;
                 } else {
                     return false;
@@ -57,32 +57,53 @@ public class MyCrawler {
         //循环条件：待抓取的链接不空且抓取的网页不多于 1000
         while (!Links.unVisitedUrlQueueIsEmpty() && Links.getVisitedUrlNum() <= limit) {
 
-            //先从待访问的序列中取出第一个；
+            //先从待访问的序列中取出 头部第一个；
             String visitUrl = (String) Links.removeHeadOfUnVisitedUrlQueue();
             if (visitUrl == null) {
                 continue;
             }
 
+            boolean baseStatus = visitUrl.equals(baseUrl);
+
             //根据URL得到page;
             Page page = RequestAndResponseTool.sendRequestAndGetResponse(visitUrl);
 
+            // 首页 a标签， 非首页 p标签
+            String cssSelector = baseStatus ? "a" : "p";
             // 对page进行处理： 访问DOM的某个标签
-            Elements es = PageParserTool.select(page, "p");
+            Elements es = PageParserTool.select(page, cssSelector);
             if (!es.isEmpty()) {
-                System.out.println("下面将打印所有 <p> 标签： ");
+                System.out.println("下面将打印所有 <" + cssSelector + ">标签： ");
                 System.out.println(es);
             }
 
-            // 保存文件
-            FileTool.saveToLocal(page);
+            if (baseStatus) {
+                // baseUrl 保存文件夹
+                FileTool.mkdir(es);
+            }
+
 
             //将已经访问过的链接放入已访问的链接中；
             Links.addVisitedUrlSet(visitUrl);
 
             //得到超链接（获取指定标签内的 超链接）
-            Set<String> links = PageParserTool.getLinks(page, "img");
+            Set<String> links;
+            if (baseStatus) {
+                // 首页
+                links = PageParserTool.getLinks(page, "a[href]");
+            } else {
+                // 非首页 取图片
+                links = PageParserTool.getLinks(page, "img");
+            }
+            // 保存文件
+
             for (String link : links) {
                 Links.addUnvisitedUrlQueue(link);
+                if (!baseStatus) {
+                    Page linkPage = RequestAndResponseTool.sendRequestAndGetResponse(link);
+                    // 保存文件
+                    FileTool.saveToLocal(linkPage, visitUrl);
+                }
                 System.out.println("新增爬取路径: " + link);
             }
         }
@@ -91,13 +112,16 @@ public class MyCrawler {
 
     //main 方法入口
     public static void main(String[] args) {
+        // 爬虫对象
         MyCrawler crawler = new MyCrawler();
-
-        String baseUrl = "https://mp.weixin.qq.com/s?__biz=MzU0Mzk5MjUxMg==&mid=2247504426&idx=1&sn=22c103693e26a175c681973e8c732cf4";
-        String childUrl = "https://mp.weixin.qq.com/s/PAlQ5w2tc_3dV_A8tr2gVg";
+        // 首页
+        String baseUrl = "https://mp.weixin.qq.com/s/1JS1-sak1ijAVN7gxHSf4A";
         List<String> list = new ArrayList<String>();
         list.add(baseUrl);
-        crawler.crawling(getStringArray(list), 10);
+        // 限制爬取网页数量
+        Integer limit = 1000;
+        // 开始爬虫
+        crawler.crawling(getStringArray(list), limit, baseUrl);
     }
 
     /**

@@ -44,13 +44,13 @@ public class PageParserTool {
             Element element = (Element) iterator.next();
             // 获取想要的元素 名称 ，前面 加上 【abs:】，可以加入links链接队列
 
-            /*if (element.hasAttr("href")) {
+            if (element.hasAttr("href")) {
                 links.add(element.attr("abs:href"));
             }
 
             if (element.hasAttr("src")) {
                 links.add(element.attr("abs:src"));
-            }*/
+            }
 
             if (element.hasAttr("data-src")) {
                 links.add(element.attr("abs:data-src"));
